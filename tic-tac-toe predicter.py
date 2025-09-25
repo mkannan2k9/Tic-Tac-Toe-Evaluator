@@ -108,18 +108,81 @@ def PROBABILITY(s, n):
     total = x_win + o_win + draw
     return x_win / total, o_win / total, draw / total
 
+def print_board(s):
+    for row in s:
+        print(row)
+
 if __name__ == "__main__":
+    print("Choose mode:")
+    print("1. Play with computer")
+    print("2. Play with a friend")
+    mode = input("Enter your choice (1 or 2): ")
     s = [["#", "#", "#"], ["#", "#", "#"], ["#", "#", "#"]]
-    while not TERMINAL(s):
-        print("Current board:")
-        for row in s:
-            print(row)
-        current_player = PLAYER(s)
-        x, o, d = PROBABILITY(s, 10000)
-        print("Prob of X win:", x)
-        print("Prob of O win:", o)
-        print("Prob of Draw:", d)
-        print(f"Turn for player {current_player}")
-        ixi = int(input("Row index: "))
-        iyi = int(input("Col index: "))
-        s = RESULT(s, (ixi, iyi))
+    if mode == "1":
+        print("Choose your symbol (X goes first):")
+        user_symbol = input("Enter X or O: ").upper()
+        c_symb = "O" if user_symbol == "X" else "X"
+        while not TERMINAL(s):
+            print("Current board:")
+            print_board(s)
+            x, o, d = PROBABILITY(s, 1000)
+            print("Prob of X win:", x)
+            print("Prob of O win:", o)
+            print("Prob of Draw:", d)
+            current_player = PLAYER(s)
+            if current_player == user_symbol:
+                print(f"Your turn ({user_symbol})")
+                valid = False
+                while not valid:
+                    ixi = int(input("Row index: "))
+                    iyi = int(input("Col index: "))
+                    if (ixi, iyi) in ACTIONS(s):
+                        valid = True
+                    else:
+                        print("Invalid move, try again.")
+                s = RESULT(s, (ixi, iyi))
+            else:
+                print(f"Computer's turn ({c_symb})")
+                if c_symb == "X":
+                    _, action, _, _ = MAX_VALUE(s)
+                else:
+                    _, action, _, _ = MIN_VALUE(s)
+                print("Computer moves at:", action)
+                s = RESULT(s, action)
+        print("Final board:")
+        print_board(s)
+        score = UTILITY(s)
+        if score == 1:
+            print("X wins!")
+        elif score == -1:
+            print("O wins!")
+        else:
+            print("It's a draw!")
+    else:
+        while not TERMINAL(s):
+            print("Current board:")
+            print_board(s)
+            x, o, d = PROBABILITY(s, 1000)
+            print("Prob of X win:", x)
+            print("Prob of O win:", o)
+            print("Prob of Draw:", d)
+            current_player = PLAYER(s)
+            print(f"Turn for player {current_player}")
+            valid = False
+            while not valid:
+                ixi = int(input("Row index: "))
+                iyi = int(input("Col index: "))
+                if (ixi, iyi) in ACTIONS(s):
+                    valid = True
+                else:
+                    print("Invalid move, try again.")
+            s = RESULT(s, (ixi, iyi))
+        print("Final board:")
+        print_board(s)
+        score = UTILITY(s)
+        if score == 1:
+            print("X wins!")
+        elif score == -1:
+            print("O wins!")
+        else:
+            print("It's a draw!")
